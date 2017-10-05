@@ -10,7 +10,11 @@ $vmName = ""
 #The resource group name VM belongs to
 $rgName = ""
 
+#Might take multiple iterations to delete everything, depending on dependencies.
 $resources = Find-AzureRmResource -ResourceGroupNameContains $rgName -ResourceNameEquals $vmName
-foreach ($resource in $resources) {
-    Remove-AzureRmResource -ResourceId $resource.ResourceId -Force
+while ($resources.length -gt 0) {
+    foreach ($resource in $resources) {
+        Remove-AzureRmResource -ResourceId $resource.ResourceId -Force
+    }
+    $resources = Find-AzureRmResource -ResourceGroupNameContains $rgName -ResourceNameEquals $vmName
 }
